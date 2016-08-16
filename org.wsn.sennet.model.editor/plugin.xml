@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+
+<!--
+-->
+
+<plugin>
+
+   <extension point="org.eclipse.ui.newWizards">
+      <!-- @generated SenNet -->
+      <category
+            id="org.eclipse.emf.ecore.Wizard.category.ID"
+            name="%_UI_Wizard_category"/>
+      <wizard
+            id="org.wsn.sennet.presentation.SennetModelWizardID"
+            name="%_UI_SennetModelWizard_label"
+            class="org.wsn.sennet.presentation.SennetModelWizard"
+            category="org.eclipse.emf.ecore.Wizard.category.ID"
+            icon="icons/full/obj16/SennetModelFile.gif">
+         <description>%_UI_SennetModelWizard_description</description>
+         <selection class="org.eclipse.core.resources.IResource"/>
+      </wizard>
+   </extension>
+
+   <extension point="org.eclipse.ui.editors">
+      <!-- @generated SenNet -->
+      <editor
+            id="org.wsn.sennet.presentation.SennetEditorID"
+            name="%_UI_SennetEditor_label"
+            icon="icons/full/obj16/SennetModelFile.gif"
+            extensions="sennettree"
+            class="org.wsn.sennet.presentation.SennetEditor"
+            contributorClass="org.wsn.sennet.presentation.SennetActionBarContributor">
+      </editor>
+   </extension>
+
+</plugin>
