@@ -2,18 +2,18 @@ package org.wsn.sennet.xtext.generator
 
 import org.eclipse.emf.ecore.resource.Resource
 import org.eclipse.xtext.generator.IFileSystemAccess
-import org.eclipse.xtext.generator.IGenerator
-import org.wsn.sennet.SeNetApp
 
 /**
  * Generates Makefile
  */
-class MakefileGenerator implements IGenerator {
+class MakefileGenerator extends AbstractSeNetGenerator {
   
   override void doGenerate(Resource resource, IFileSystemAccess fsa) {
-    fsa.generateFile("Makefile", '''
-      COMPONENT=«resource.contents.filter(typeof(SeNetApp)).last.name»AppC
-      Include $(MAKERULES)
-    ''')
+    resource.forEachNode[nodeId, nodeJob |
+      fsa.generateFile("Makefile" + nodeId, '''
+        COMPONENT=«nodeName»AppC
+        Include $(MAKERULES)
+      ''')
+    ]
   }
 }

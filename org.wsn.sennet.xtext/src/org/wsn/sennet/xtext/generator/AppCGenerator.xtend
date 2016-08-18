@@ -1,48 +1,44 @@
 package org.wsn.sennet.xtext.generator
 
-import org.wsn.sennet.AbstratAction
-import org.eclipse.emf.ecore.EObject
 import org.eclipse.emf.ecore.resource.Resource
-import org.eclipse.emf.ecore.util.EcoreUtil
 import org.eclipse.xtext.generator.IFileSystemAccess
-import org.eclipse.xtext.generator.IGenerator
 import org.wsn.sennet.AbstractJob
-import org.wsn.sennet.SeNetApp
+import org.wsn.sennet.AbstractSensor
+import org.wsn.sennet.AbstratAction
 import org.wsn.sennet.SendMessageAction
 import org.wsn.sennet.SenseJob
 import org.wsn.sennet.TemperatureSensor
-import org.wsn.sennet.AbstractSensor
 
 /**
  * Generates XXXAppC.nc files
  */
-class AppCGenerator implements IGenerator {
+class AppCGenerator extends AbstractSeNetGenerator {
   
   override void doGenerate(Resource resource, IFileSystemAccess fsa) {
-    resource.contents.filter(typeof(SeNetApp)).forEach[
-      fsa.generateFile(name + "AppC", generateAppCSenNetpp(it))
+    resource.forEachNode[nodeId, nodeJob |
+      val fileName = nodeJob.app.name + nodeId + "AppC.nc";
+      fsa.generateFile(fileName, generateAppCSenNetpp(nodeJob))
     ]
   }
   
-  def generateAppCSenNetpp(SeNetApp app) '''
-    configuration «app.name»AppC
+  def generateAppCSenNetpp(AbstractJob job) '''
+    configuration «nodeName»AppC
     {
       
     }
+    
     implementation {
-      components «app.name»C;
+      components «nodeName»C;
       components MainC;
-      «app.name»C.Boot -> MainC;
+      «nodeName»C.Boot -> MainC;
       
-      «FOR job : app.jobs»
-        «generateJob(job)»
-      «ENDFOR»
+      «generateJob(job)»
     }
   '''
   
   def dispatch generateJob(SenseJob job) '''
     components new TimerMilliC();
-    «job.app.name»C.Timer -> TimerMilliC;
+    «nodeName»C.Timer -> TimerMilliC;
     
     «FOR action : job.jobaction»
       «generateAction(action)»
@@ -68,27 +64,23 @@ class AppCGenerator implements IGenerator {
     components ActiveMessageC;
     components new AMSenderC(AM_RADIO);
     components new AMReceiverC(AM_RADIO);
-    «job.app.name»C.Packet -> AMSenderC;
-    «job.app.name»C.AMPacket -> AMSenderC;
-    «job.app.name»C.AMSend -> AMSenderC;
-    «job.app.name»C.SplitControl -> ActiveMessageC;
-    «job.app.name»C.Receive -> AMReceiverC;
+    «nodeName»C.Packet -> AMSenderC;
+    «nodeName»C.AMPacket -> AMSenderC;
+    «nodeName»C.AMSend -> AMSenderC;
+    «nodeName»C.SplitControl -> ActiveMessageC;
+    «nodeName»C.Receive -> AMReceiverC;
   '''
   
   def dispatch generateAction(AbstratAction job) {
-    throw new UnsupportedOperationException("Yet to be implemented")
+    throw new UnsupportedOperationException("Yet to be implemented ")
   }
   
   def dispatch generateSensor(TemperatureSensor sensor) '''
-  components new SensirionSht11C() as Sensor;
-  «sensor.app.name»C.Read -> Sensor.Temperature;
+    components new SensirionSht11C() as Sensor;
+    «nodeName»C.Read -> Sensor.Temperature;
   '''
   
   def dispatch generateSensor(AbstractSensor sensor) {
     throw new UnsupportedOperationException("Yet to be implemented")
-  }
-  
-  def getApp(EObject eObject) {
-    EcoreUtil.getRootContainer(eObject) as SeNetApp
   }
 }

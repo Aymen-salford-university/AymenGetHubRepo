@@ -2,12 +2,11 @@ package org.wsn.sennet.xtext.generator
 
 import org.eclipse.emf.ecore.resource.Resource
 import org.eclipse.xtext.generator.IFileSystemAccess
-import org.eclipse.xtext.generator.IGenerator
 
 /**
  * Generates header (AMsg.h) file
  */
-class HeaderGenerator implements IGenerator {
+class HeaderGenerator extends AbstractSeNetGenerator {
   
   override void doGenerate(Resource resource, IFileSystemAccess fsa) {
     fsa.generateFile("AMsg.h", '''
