@@ -1,64 +1,49 @@
 package org.wsn.sennet.xtext.generator
 
-import org.eclipse.emf.ecore.EObject
 import org.eclipse.emf.ecore.resource.Resource
-import org.eclipse.emf.ecore.util.EcoreUtil
 import org.eclipse.xtext.generator.IFileSystemAccess
-import org.eclipse.xtext.generator.IGenerator
 import org.wsn.sennet.AbstractJob
-import org.wsn.sennet.AbstratAction 
-import org.wsn.sennet.SeNetApp
+import org.wsn.sennet.AbstratAction
+import org.wsn.sennet.ConditionalAction
 import org.wsn.sennet.SendMessageAction
 import org.wsn.sennet.SenseJob
-import org.wsn.sennet.ConditionalAction
 import org.wsn.sennet.enums.LogicalSymbol
 
 /**
  * Generates XXXC.nc files
  */
-class CGenerator implements IGenerator {
+class CGenerator extends AbstractSeNetGenerator {
   
   override void doGenerate(Resource resource, IFileSystemAccess fsa) {
-    resource.contents.filter(typeof(SeNetApp)).forEach[
-      fsa.generateFile(name + "C", generateAppCSenNetpp(it))
+    resource.forEachNode[nodeId, nodeJob |
+      val fileName = nodeJob.app.name + nodeId + "C.nc";
+      fsa.generateFile(fileName, generateAppCSenNetpp(nodeJob))
     ]
   }
   
-  def generateAppCSenNetpp(SeNetApp app) '''
-    «FOR job : app.jobs»
-      «generateJobInclude(job)»
-    «ENDFOR»
+  def generateAppCSenNetpp(AbstractJob job) '''
+    «generateJobInclude(job)»
     
-    module «app.name»C
+    module «nodeName»C
     {
       uses {
         interface Boot;
         interface SplitControl;
-        «FOR job : app.jobs»
-          «generateJobUsage(job)»
-        «ENDFOR»
+        «generateJobUsage(job)»
       }
     }
     
     Implementation {
-      «FOR job : app.jobs»
-        «generateJobImplementation(job)»
-      «ENDFOR»
+      «generateJobImplementation(job)»
       
       event void Boot.booted()
       {
-        «FOR job : app.jobs»
-          «generateJobBoot(job)»
-        «ENDFOR»
+        «generateJobBoot(job)»
       }
       
-      «FOR job : app.jobs»
-        «generateJob(job)»
-      «ENDFOR»
+      «generateJob(job)»
       
-      «FOR job : app.jobs»
-        «generateJobEvent(job)»
-      «ENDFOR»
+      «generateJobEvent(job)»
     }
   '''
   
@@ -213,7 +198,6 @@ class CGenerator implements IGenerator {
   }
   
   def dispatch generateActionUsage(SendMessageAction job) '''
-    interface Read<uint16_t>;
     interface Packet;
     interface AMPacket;
     interface AMSend;
@@ -222,9 +206,5 @@ class CGenerator implements IGenerator {
   
   def dispatch generateActionUsage(AbstratAction job) {
     throw new UnsupportedOperationException("Yet to be implemented")
-  }
-  
-  def getApp(EObject eObject) {
-    EcoreUtil.getRootContainer(eObject) as SeNetApp
   }
 }
