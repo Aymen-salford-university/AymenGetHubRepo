@@ -4,6 +4,7 @@ import org.eclipse.emf.ecore.resource.Resource
 import org.eclipse.xtext.generator.IFileSystemAccess
 import org.wsn.sennet.AbstractJob
 import org.wsn.sennet.AbstratAction
+import org.wsn.sennet.BlinkAction
 import org.wsn.sennet.ConditionalAction
 import org.wsn.sennet.SendMessageAction
 import org.wsn.sennet.SenseJob
@@ -43,7 +44,9 @@ class CGenerator extends AbstractSeNetGenerator {
       
       «generateJob(job)»
       
-      «generateJobEvent(job)»
+      «FOR action : job.jobaction»
+        «generateActionEvent(action)»
+      «ENDFOR»
     }
   '''
   
@@ -118,7 +121,7 @@ class CGenerator extends AbstractSeNetGenerator {
     throw new UnsupportedOperationException("Yet to be implemented")
   }
   
-  def dispatch generateJobEvent(SenseJob job) '''
+  def dispatch generateActionEvent(SendMessageAction job) '''
     event void AMSend.sendDone(message_t *msg, error_t error)
     {
       if (msg == & messagePacket)
@@ -133,9 +136,8 @@ class CGenerator extends AbstractSeNetGenerator {
     }
   '''
   
-  def dispatch generateJobEvent(AbstractJob job) {
-    throw new UnsupportedOperationException("Yet to be implemented")
-  }
+  def dispatch generateActionEvent(AbstratAction job) '''
+  '''
   
   def generateActionWithCondition(AbstratAction action) '''
     «IF action.condition != null»
@@ -163,7 +165,7 @@ class CGenerator extends AbstractSeNetGenerator {
     }
   }
   
-  def dispatch generateAction(SendMessageAction job) '''
+  def dispatch generateAction(SendMessageAction action) '''
     if (radioBusy == FALSE)
     {
       ActiveMessage_t* msg = call Packet.getPayload(&messagePacket,sizeof(ActiveMessage_t));
@@ -176,35 +178,41 @@ class CGenerator extends AbstractSeNetGenerator {
     }
   '''
   
-  def dispatch generateAction(AbstratAction job) {
+  def dispatch generateAction(BlinkAction action) '''
+    call Leds.«action.led.toString.toFirstLower»«action.status.toString.toFirstUpper»();
+  '''
+  
+  def dispatch generateAction(AbstratAction action) {
     throw new UnsupportedOperationException("Yet to be implemented")
   }
   
-  def dispatch generateActionInclude(SendMessageAction job) '''
+  def dispatch generateActionInclude(SendMessageAction action) '''
     #include "AMsg.h"
   '''
   
-  def dispatch generateActionInclude(AbstratAction job) {
-    throw new UnsupportedOperationException("Yet to be implemented")
-  }
+  def dispatch generateActionInclude(AbstratAction action) '''
+  '''
   
-  def dispatch generateActionImplementation(SendMessageAction job) '''
+  def dispatch generateActionImplementation(SendMessageAction action) '''
     bool radioBusy;
     message_t messagePacket;
   '''
   
-  def dispatch generateActionImplementation(AbstratAction job) {
-    throw new UnsupportedOperationException("Yet to be implemented")
-  }
+  def dispatch generateActionImplementation(AbstratAction action) '''
+  '''
   
-  def dispatch generateActionUsage(SendMessageAction job) '''
+  def dispatch generateActionUsage(SendMessageAction action) '''
     interface Packet;
     interface AMPacket;
     interface AMSend;
     interface Receive;
   '''
   
-  def dispatch generateActionUsage(AbstratAction job) {
+  def dispatch generateActionUsage(BlinkAction action) '''
+    interface Leds;
+  '''
+  
+  def dispatch generateActionUsage(AbstratAction action) {
     throw new UnsupportedOperationException("Yet to be implemented")
   }
 }
