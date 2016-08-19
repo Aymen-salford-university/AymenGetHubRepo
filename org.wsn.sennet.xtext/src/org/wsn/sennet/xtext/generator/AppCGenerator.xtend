@@ -8,6 +8,7 @@ import org.wsn.sennet.AbstratAction
 import org.wsn.sennet.SendMessageAction
 import org.wsn.sennet.SenseJob
 import org.wsn.sennet.TemperatureSensor
+import org.wsn.sennet.BlinkAction
 
 /**
  * Generates XXXAppC.nc files
@@ -60,7 +61,7 @@ class AppCGenerator extends AbstractSeNetGenerator {
     throw new UnsupportedOperationException("Yet to be implemented")
   }
   
-  def dispatch generateAction(SendMessageAction job) '''
+  def dispatch generateAction(SendMessageAction action) '''
     components ActiveMessageC;
     components new AMSenderC(AM_RADIO);
     components new AMReceiverC(AM_RADIO);
@@ -69,6 +70,11 @@ class AppCGenerator extends AbstractSeNetGenerator {
     «nodeName»C.AMSend -> AMSenderC;
     «nodeName»C.SplitControl -> ActiveMessageC;
     «nodeName»C.Receive -> AMReceiverC;
+  '''
+  
+  def dispatch generateAction(BlinkAction job) '''
+    components LedsC;
+    «nodeName»C.Leds -> LedsC;
   '''
   
   def dispatch generateAction(AbstratAction job) {
