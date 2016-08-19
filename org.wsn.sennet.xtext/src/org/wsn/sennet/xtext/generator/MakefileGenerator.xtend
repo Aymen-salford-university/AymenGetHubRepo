@@ -10,7 +10,11 @@ class MakefileGenerator extends AbstractSeNetGenerator {
   
   override void doGenerate(Resource resource, IFileSystemAccess fsa) {
     resource.forEachNode[nodeId, nodeJob |
-      fsa.generateFile("Makefile" + nodeId, '''
+      var makefileName = "Makefile";
+      if (nodeId > 0) {
+        makefileName += nodeId
+      }
+      fsa.generateFile(makefileName, '''
         COMPONENT=«nodeName»AppC
         Include $(MAKERULES)
       ''')
