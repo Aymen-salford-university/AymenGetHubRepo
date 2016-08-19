@@ -59,6 +59,9 @@ abstract class AbstractSeNetGenerator implements IGenerator {
           nodeName = app.name + i
           handler.apply(i, it)
         }        
+      } else {
+        nodeName = app.name;
+        handler.apply(0, it)
       }
     ]
   }

@@ -17,8 +17,8 @@ class AppCGenerator extends AbstractSeNetGenerator {
   
   override void doGenerate(Resource resource, IFileSystemAccess fsa) {
     resource.forEachNode[nodeId, nodeJob |
-      val fileName = nodeJob.app.name + nodeId + "AppC.nc";
-      fsa.generateFile(fileName, generateAppCSenNetpp(nodeJob))
+      val fileName = nodeName + "AppC.nc";
+      fsa.generateFile(fileName, generateAppCSenNetpp(nodeJob).toString.trim)
     ]
   }
   
@@ -57,9 +57,9 @@ class AppCGenerator extends AbstractSeNetGenerator {
     «ENDIF»
   '''
   
-  def dispatch generateJob(AbstractJob job) {
-    throw new UnsupportedOperationException("Yet to be implemented")
-  }
+  def dispatch generateJob(AbstractJob job) '''
+    // Code generation not implemented for job: «job.eClass.name»
+  '''
   
   def dispatch generateAction(SendMessageAction action) '''
     components ActiveMessageC;
@@ -77,16 +77,16 @@ class AppCGenerator extends AbstractSeNetGenerator {
     «nodeName»C.Leds -> LedsC;
   '''
   
-  def dispatch generateAction(AbstratAction job) {
-    throw new UnsupportedOperationException("Yet to be implemented ")
-  }
+  def dispatch generateAction(AbstratAction action) '''
+    // Code generation not implemented for action: «action.eClass.name»
+  '''
   
   def dispatch generateSensor(TemperatureSensor sensor) '''
     components new SensirionSht11C() as Sensor;
     «nodeName»C.Read -> Sensor.Temperature;
   '''
   
-  def dispatch generateSensor(AbstractSensor sensor) {
-    throw new UnsupportedOperationException("Yet to be implemented")
-  }
+  def dispatch generateSensor(AbstractSensor sensor) '''
+    // Code generation not implemented for sensor: «sensor.eClass.name»
+  '''
 }

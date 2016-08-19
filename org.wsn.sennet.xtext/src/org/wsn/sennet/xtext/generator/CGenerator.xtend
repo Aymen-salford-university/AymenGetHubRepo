@@ -17,8 +17,8 @@ class CGenerator extends AbstractSeNetGenerator {
   
   override void doGenerate(Resource resource, IFileSystemAccess fsa) {
     resource.forEachNode[nodeId, nodeJob |
-      val fileName = nodeJob.app.name + nodeId + "C.nc";
-      fsa.generateFile(fileName, generateAppCSenNetpp(nodeJob))
+      val fileName = nodeName + "C.nc";
+      fsa.generateFile(fileName, generateAppCSenNetpp(nodeJob).toString.trim)
     ]
   }
   
@@ -75,9 +75,9 @@ class CGenerator extends AbstractSeNetGenerator {
     }
   '''
   
-  def dispatch generateJob(AbstractJob job) {
-    throw new UnsupportedOperationException("Yet to be implemented")
-  }
+  def dispatch generateJob(AbstractJob job) '''
+    // Code generation not implemented for job: «job.eClass.name»
+  '''
   
   def dispatch generateJobUsage(SenseJob job) '''
     interface Read<uint16_t>;
@@ -87,9 +87,7 @@ class CGenerator extends AbstractSeNetGenerator {
     «ENDFOR»
   '''
   
-  def dispatch generateJobUsage(AbstractJob job) {
-    throw new UnsupportedOperationException("Yet to be implemented")
-  }
+  def dispatch generateJobUsage(AbstractJob job) { "" }
   
   def dispatch generateJobImplementation(SenseJob job) '''
     «FOR action : job.jobaction»
@@ -97,18 +95,18 @@ class CGenerator extends AbstractSeNetGenerator {
     «ENDFOR»
   '''
   
-  def dispatch generateJobImplementation(AbstractJob job) {
-    throw new UnsupportedOperationException("Yet to be implemented")
-  }
+  def dispatch generateJobImplementation(AbstractJob job) '''
+    // Code generation not implemented for job: «job.eClass.name»
+  '''
   
   def dispatch generateJobBoot(SenseJob job) '''
     call Timer.startPeriodic(«job.sensingSamplingRate»);
     call SplitControl.start();
   '''
   
-  def dispatch generateJobBoot(AbstractJob job) {
-    throw new UnsupportedOperationException("Yet to be implemented")
-  }
+  def dispatch generateJobBoot(AbstractJob job) '''
+    // Code generation not implemented for job: «job.eClass.name»
+  '''
   
   def dispatch generateJobInclude(SenseJob job) '''
     #include "Timer.h"
@@ -117,9 +115,7 @@ class CGenerator extends AbstractSeNetGenerator {
     «ENDFOR»
   '''
   
-  def dispatch generateJobInclude(AbstractJob job) {
-    throw new UnsupportedOperationException("Yet to be implemented")
-  }
+  def dispatch generateJobInclude(AbstractJob job) { "" }
   
   def dispatch generateActionEvent(SendMessageAction job) '''
     event void AMSend.sendDone(message_t *msg, error_t error)
@@ -212,7 +208,5 @@ class CGenerator extends AbstractSeNetGenerator {
     interface Leds;
   '''
   
-  def dispatch generateActionUsage(AbstratAction action) {
-    throw new UnsupportedOperationException("Yet to be implemented")
-  }
+  def dispatch generateActionUsage(AbstratAction action) { "" }
 }
